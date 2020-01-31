@@ -1,10 +1,19 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Invite User'
+description: 'Invites a user into a GitHub organization.'
+author: 'Froilán Irizarry Rivera'
 inputs:
-  myInput:              # change this
-    description: 'input description here'
-    default: 'default value if applicable'
+  PARSING_RULES_PATH:
+    description: 'The path to the parsing rules'
+    required: true
+    default: '.github/parsing_rules.json'
+  OWNERS:
+    description: 'Users to notify in the event of a failure.  In the form of a csv'
+    required: true
+outputs:
+  message:
+    description: 'Message output. Can be of actions taken or an error message.'
+  stepStatus:
+    description: 'The status of the current step. Values should be `success` or `failed`.'
 runs:
   using: 'node12'
   main: 'dist/index.js'
