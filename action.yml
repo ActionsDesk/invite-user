@@ -11,7 +11,10 @@ inputs:
     required: true
   USER_ROLE:
     description: 'The default role to apply to the user being invited to the organization.'
-    required: true
+    required: false
+  OWNERS:
+    description: 'A list of GitHub users that are the owners of the repo / issues.'
+    required: false
 outputs:
   message:
     description: 'Message output. Can be of actions taken or an error message.'
