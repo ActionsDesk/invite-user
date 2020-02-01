@@ -2,12 +2,15 @@ name: 'Invite User'
 description: 'Invites a user into a GitHub organization.'
 author: 'Froilán Irizarry Rivera'
 inputs:
-  PARSING_RULES_PATH:
+  CONFI_PATH:
     description: 'The path to the parsing rules'
     required: true
     default: '.github/parsing_rules.json'
-  OWNERS:
-    description: 'Users to notify in the event of a failure.  In the form of a csv'
+  EMAIL:
+    description: 'The email of the user to invite into the GitHub organization.'
+    required: true
+  USER_ROLE:
+    description: 'The default role to apply to the user being invited to the organization.'
     required: true
 outputs:
   message:

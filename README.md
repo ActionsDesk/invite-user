@@ -1,117 +1,154 @@
-<p align="center">
-  <a href="https://github.com/actions/typescript-action/actions"><img alt="typescript-action status" src="https://github.com/actions/typescript-action/workflows/build-test/badge.svg"></a>
-</p>
+# GitHub Action - Add or Invite User to a GitHub Organization
 
-# Create a JavaScript Action using TypeScript
+This GitHub Action (written in TypeScript) uses the [organization members API](https://developer.github.com/v3/orgs/members) , specifically the [create organization invitation](https://developer.github.com/v3/orgs/members/#create-organization-invitation) and [add or update organization membership](https://developer.github.com/v3/orgs/members/#add-or-update-organization-membership) endpoints, to allow you to leverage GitHub Actions and Issues to onboard new organization members.
 
-Use this template to bootstrap the creation of a JavaScript action.:rocket:
+<!-- Add test badge once proper tests are added -->
 
-This template includes compilication support, tests, a validation workflow, publishing, and versioning guidance.  
+## Usage
 
-If you are new, there's also a simpler introduction.  See the [Hello World JavaScript Action](https://github.com/actions/hello-world-javascript-action)
+### Pre-requisites
 
-## Create an action from this template
+Create a `workflow.yml` file in your repository's `.github/workflows` directory. An [example workflow](#example-workflow---add-new-user-to-org) is available below. For more information, reference the GitHub Help Documentation for [Creating a workflow file](https://help.github.com/en/articles/configuring-a-workflow#creating-a-workflow-file).
 
-Click the `Use this Template` and provide the new repo details for your action
+### Inputs
 
-## Code in Master
+For more information on these inputs, see the [API Documentation](https://developer.github.com/v3/repos/releases/#input-2)
 
-Install the dependencies  
-```bash
-$ npm install
-```
+- `CONFIG_PATH`: The path to the GitHub Issue config rules. For more info on the contents of this file please see the [Config Rules](#config-rules) section below.
+- `USER_ROLE`: The default role to apply to the user being invited to the organization. We recommend using `direct_member`. Please use caution when changing this value, you could give users too much privileges to your organization.
+- `EMAIL`: The email of the user that you are adding to the organization. This can be obtained programatically with the [Actions-Parse-Issue](https://github.com/jasonmacgowan/actions-parse-issue) action
 
-Build the typescript
-```bash
-$ npm run build
-```
+### Outputs
 
-Run the tests :heavy_check_mark:  
-```bash
-$ npm test
+This action has two output variables to help you create composable workflows.
 
- PASS  ./index.test.js
-  ✓ throws invalid number (3ms)
-  ✓ wait 500 ms (504ms)
-  ✓ test runs (95ms)
+- message: This outputs a success or failure message. This will help you use another action to post messages to an issue. See example [Actions workflow](#example-workflow---add-new-user-to-org-with-outputs) below.
+- stepStatus: This outputs the status of this step. There are two possible values `success` and `failed`. With this status you can now configure your workflow file to not end the job on an error. See example [Actions workflow](#example-workflow---add-new-user-to-org-with-outputs) below.
 
-...
-```
+### Environment Variables
 
-## Change action.yml
+- `ADMIN_TOKEN`: Personal Access Token (PAT) of a member of the organization that has owner privileges.
 
-The action.yml contains defines the inputs and output for your action.
+#### Why is this needed
 
-Update the action.yml with your name, description, inputs and outputs for your action.
+The GitHub Actions context has access to a `GITHUB_TOKEN` environment variables that is scoped to the repository that is running the Action. Adding new users to an organization requires a token with a larger scope / privileges.
 
-See the [documentation](https://help.github.com/en/articles/metadata-syntax-for-github-actions)
+- To learn more on token scopes [click here](https://developer.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/#available-scopes).
+- To learn how to create your own personal access token [click here](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line).
 
-## Change the Code
+### Config Rules
 
-Most toolkit and CI/CD operations involve async operations so the action is run in an async function.
+A JSON file with the rules you need to define to parse the GitHub Issue body and extract the data needed to create an invitation to your GitHub organization as well as the valid domain from which you will accept emails.
 
-```javascript
-import * as core from '@actions/core';
-...
+#### Structure
 
-async function run() {
-  try { 
-      ...
-  } 
-  catch (error) {
-    core.setFailed(error.message);
+The action expects the use of regular expressions with named capture groups. There are two base named capture groups that the Action expects with one additional optional group:
+
+- **emailRule**
+- **trustedUserRule**
+  - Optional, validation will be ignored if this is not included
+
+```JSON
+{
+  "emailDomainRule": {
+    "regex": "your-regular-expression"
+  },
+  "trustedUserRule": {
+    "regex": "your-regular-expression"
   }
 }
-
-run()
 ```
 
-See the [toolkit documentation](https://github.com/actions/toolkit/blob/master/README.md#packages) for the various packages.
+Want a better example? [Click here](#example-config-file)
 
-## Publish to a distribution branch
+#### More info on regular expressions
 
-Actions are run from GitHub repos.  We will create a releases branch and only checkin production modules (core in this case). 
+This Action is written with Javascript, we recommend reading up on regular expressions and how to use them with the Javascript engine.
 
-Comment out node_modules in .gitignore and create a releases/v1 branch
-```bash
-# comment out in distribution branches
-# node_modules/
-```
+- Want to learn more about the art of regular expressions? Great, take a [look at this](https://javascript.info/regular-expressions).
+- Want to learn more about named capture groups? Well then please [click here](https://javascript.info/regexp-groups#named-groups).
 
-```bash
-$ git checkout -b releases/v1
-$ git commit -a -m "prod dependencies"
-```
+## Examples
 
-```bash
-$ npm prune --production
-$ git add node_modules
-$ git commit -a -m "prod dependencies"
-$ git push origin releases/v1
-```
+### Example workflow - add new user to org
 
-Your action is now published! :rocket: 
-
-See the [versioning documentation](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-
-## Validate
-
-You can now validate the action by referencing the releases/v1 branch
+This workflow will execute the `add_invite_user` action on every `issue.labeled` event triger, in other words every time a label is added to the issue.
 
 ```yaml
-uses: actions/typescript-action@releases/v1
-with:
-  milliseconds: 1000
+name: Add User from Issues
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  create-invite:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Get issue data
+        uses: froi/add_invite_user@release/v1
+        with:
+          PARSING_RULES_PATH: ".github/parsing_rules.json"
+          USER_ROLE: "direct_member"
+          EMAIL: ${{ steps.get_input.outputs.email }}
+        env:
+          ADMIN_TOKEN: ${{secrets.ADMIN_TOKEN}}
 ```
 
-See the [actions tab](https://github.com/actions/javascript-action/actions) for runs of this action! :rocket:
+This will workflow will create a new organization invitation for the user information found in the issue body.
 
-## Usage:
-
-After testing you can [create a v1 tag](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md) to reference the stable and tested action
+### Example workflow - add new user to org with outputs
 
 ```yaml
-uses: actions/typescript-action@v1
-with:
-  milliseconds: 1000
+name: Add User from Issues
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  create-invite:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get User Input
+        id: get_input
+        uses: ActionsDesk/parse-issue@master
+        with:
+          extract_email: '<p>Email of Requester:\s*(.*)</p>'
+      - name: Invite User
+        id: get-issue-data
+        uses: ActionsDesk/invite_user@release/v1
+        with:
+          CONFIG_PATH: ".github/config.json"
+          USER_ROLE: "direct_member"
+          EMAIL: ${{ steps.get_input.outputs.['email']}}
+      - name: Comment on Issue
+        uses: ActionsDesk/add-comment-action@v1
+        with:
+          message: ${{ steps.get-issue-data.message }}
+          status: ${{ steps.get-issue-data.stepStatus }}
 ```
+
+This will workflow will create a new organization invitation for the user information found in the issue body and will post a success or failure message as an issue comment.
+
+### Example Config file
+
+```JSON
+{
+  "emailRule": {
+    "regex": ".*email@domain.com$"
+  },
+  "trustedUserRule": {
+  "regex": "UserName"
+  }
+}
+```
+
+## Contributing
+
+Want to contribute to this GitHub Action? Fantastic! Pull requests are welcome! Please see the [CONTRIBUTING.md](CONTRIBUTING.md) for more information :heart:.
+
+## License
+
+The scripts and documentation in this project are released under the [MIT License](LICENSE)
