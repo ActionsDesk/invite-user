@@ -17,6 +17,7 @@ For more information on these inputs, see the [API Documentation](https://develo
 - `CONFIG_PATH`: The path to the GitHub Issue config rules. For more info on the contents of this file please see the [Config Rules](#config-rules) section below.
 - `USER_ROLE`: The default role to apply to the user being invited to the organization. We recommend using `direct_member`. Please use caution when changing this value, you could give users too much privileges to your organization.
 - `EMAIL`: The email of the user that you are adding to the organization. This can be obtained programatically with the [Actions-Parse-Issue](https://github.com/jasonmacgowan/actions-parse-issue) action
+- `OWNERS`: A list of GitHub users that are the owners of the repo / issues. These users will be mentioned in issue comments when an unforseen error occurs. The list should be in a CSV format. Eg. `user1,user2,user3`.
 
 ### Outputs
 
