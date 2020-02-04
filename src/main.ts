@@ -1,8 +1,8 @@
 import * as core from '@actions/core';
 import {GitHub, context} from '@actions/github';
 import * as utils from './utils';
-import {Issue, ActionInputs, CreateInvitationInputs, IssueFeedbackInputs} from './interfaces';
-import outdent from 'outdent';
+import {Issue, ActionInputs, CreateInvitationInputs} from './interfaces';
+import {outdent} from 'outdent';
 import * as Octokit from '@octokit/rest';
 
 async function createInvitation(
@@ -21,7 +21,7 @@ async function createInvitation(
       await utils.writeIssueFeedback(github, {
         owner: input.owner,
         repo: input.repo,
-        issue_number: input.issue.number,
+        issueNumber: input.issue.number,
         labels: ['retry'],
         body: `${errorMessage}. Retrying over-night`
       });
@@ -33,7 +33,7 @@ async function createInvitation(
       await utils.writeIssueFeedback(github, {
         owner: input.owner,
         repo: input.repo,
-        issue_number: input.issue.number,
+        issueNumber: input.issue.number,
         labels: ['automation-failed'],
         body: outdent`Automation Failed:
             Org Admins will review the request and action it manually.
