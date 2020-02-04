@@ -19,6 +19,14 @@ export function validEmail(email: string, emailRegex: string): boolean {
 export function isTrustedUser(issue: Issue, trustedUserRegex: string): boolean {
   return new RegExp(trustedUserRegex).test(issue.user.login);
 }
+function getFileContent(
+  data: Octokit.ReposGetContentsResponse | Array<Octokit.ReposGetContentsResponseItem>
+): string | undefined {
+  if ('content' in data) {
+    return data.content;
+  }
+  return undefined;
+}
 
 export async function getConfig(github: GitHub, owner: string, repo: string, path: string): Promise<Config> {
   const result: Octokit.Response<Octokit.ReposGetContentsResponse> = await github.repos.getContents({
@@ -29,9 +37,9 @@ export async function getConfig(github: GitHub, owner: string, repo: string, pat
 
   core.debug('in getConfig');
 
-  const content: string = result.data.content || '';
+  const content: string | undefined = getFileContent(result.data);
 
-  const decodedContent = Buffer.from(content, 'base64').toString('ascii');
+  const decodedContent = Buffer.from(content || '', 'base64').toString('ascii');
 
   core.debug(JSON.stringify(decodedContent));
   const config: Config = JSON.parse(decodedContent);
