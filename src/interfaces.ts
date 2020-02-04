@@ -32,7 +32,7 @@ export interface CreateInvitationInputs {
 export interface IssueFeedbackInputs {
   owner: string;
   repo: string;
-  issue_number: number;
+  issueNumber: number;
   labels: string[];
   body: string;
 }

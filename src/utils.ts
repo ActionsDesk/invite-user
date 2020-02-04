@@ -92,13 +92,13 @@ export async function writeIssueFeedback(github: GitHub, input: IssueFeedbackInp
   await github.issues.addLabels({
     owner: input.owner,
     repo: input.repo,
-    issue_number: input.issue_number,
+    issue_number: input.issueNumber,
     labels: input.labels
   });
   await github.issues.createComment({
     owner: input.owner,
     repo: input.repo,
-    issue_number: input.issue_number,
+    issue_number: input.issueNumber,
     body: input.body
   });
 }
