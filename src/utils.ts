@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import * as core from '@actions/core';
 import {GitHub} from '@actions/github';
 import {Config, Issue, UserRole, ActionInputs, IssueFeedbackInputs} from './interfaces';
@@ -20,7 +21,7 @@ export function isTrustedUser(issue: Issue, trustedUserRegex: string): boolean {
   return new RegExp(trustedUserRegex).test(issue.user.login);
 }
 function getFileContent(
-  data: Octokit.ReposGetContentsResponse | Array<Octokit.ReposGetContentsResponseItem>
+  data: Octokit.ReposGetContentsResponse | Octokit.ReposGetContentsResponseItem[]
 ): string | undefined {
   if ('content' in data) {
     return data.content;
