@@ -1,6 +1,9 @@
-import {getClient, getContextRepo, isTrustedUser, validEmail} from '../src/utils';
+jest.mock('@actions/core');
+
+import {getClient, getContextRepo, getInputs, isTrustedUser, validEmail} from '../src/utils';
 import {GitHub} from '@actions/github';
-import {Issue} from '../src/interfaces';
+import {ActionInputs, Issue} from '../src/interfaces';
+const core = require('@actions/core');
 
 describe('Utils tests', () => {
   beforeEach(() => {
@@ -43,5 +46,20 @@ describe('Utils tests', () => {
   test('getContextRepo should throw error', () => {
     delete process.env.GITHUB_REPOSITORY;
     expect(getContextRepo).toThrowError();
+  });
+  test('getInputs should return ActionInputs', () => {
+    core.getInput = jest
+      .fn()
+      .mockReturnValueOnce('EMAIL')
+      .mockReturnValueOnce('direct_member')
+      .mockReturnValueOnce('CONFIG_PATH');
+
+    const inputs: ActionInputs = getInputs();
+    const expected: ActionInputs = {
+      email: 'EMAIL',
+      role: 'direct_member',
+      configPath: 'CONFIG_PATH'
+    };
+    expect(inputs).toMatchObject<ActionInputs>(expected);
   });
 });
