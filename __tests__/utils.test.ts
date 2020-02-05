@@ -1,6 +1,6 @@
 jest.mock('@actions/core');
 
-import {getClient, getContextRepo, getInputs, isTrustedUser, validEmail} from '../src/utils';
+import {getClient, getContextRepo, getInputs, handleError, isTrustedUser, validEmail} from '../src/utils';
 import {GitHub} from '@actions/github';
 import {ActionInputs, Issue} from '../src/interfaces';
 const core = require('@actions/core');
@@ -61,5 +61,16 @@ describe('Utils tests', () => {
       configPath: 'CONFIG_PATH'
     };
     expect(inputs).toMatchObject<ActionInputs>(expected);
+  });
+  test('handleError', () => {
+    core.debug = jest.fn().mockReturnValue('debug');
+    core.setOutput = jest.fn().mockReturnValue('setOutput');
+    core.setFailed = jest.fn().mockReturnValue('setFailed');
+
+    handleError(new Error('oh no!!!'));
+
+    expect(core.debug).toBeCalledTimes(2);
+    expect(core.setOutput).toBeCalledTimes(2);
+    expect(core.setFailed).toBeCalledTimes(1);
   });
 });
