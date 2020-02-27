@@ -6,6 +6,7 @@ import * as Octokit from '@octokit/rest';
 import {WebhookPayload} from '@actions/github/lib/interfaces';
 
 export function getClient(): GitHub {
+  core.debug('getting client');
   if (process.env.ADMIN_TOKEN) {
     return new GitHub(process.env.ADMIN_TOKEN);
   } else {

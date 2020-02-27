@@ -3487,6 +3487,7 @@ const outdent_1 = __webpack_require__(438);
 function createInvitation(github, input) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            core.debug('Inviting user');
             return yield github.orgs.createInvitation({
                 org: input.owner,
                 role: input.role,
@@ -3494,6 +3495,7 @@ function createInvitation(github, input) {
             });
         }
         catch (error) {
+            core.debug(JSON.stringify(error));
             if (error.errors.find((e) => e.message === 'Over invitation rate limit')) {
                 const errorMessage = 'Over invitiation rate limit';
                 yield utils.writeIssueFeedback(github, {
@@ -8387,6 +8389,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
 const github_1 = __webpack_require__(469);
 function getClient() {
+    core.debug('getting client');
     if (process.env.ADMIN_TOKEN) {
         return new github_1.GitHub(process.env.ADMIN_TOKEN);
     }
