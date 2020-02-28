@@ -11,6 +11,9 @@ async function createInvitation(
 ): Promise<Octokit.Response<Octokit.OrgsCreateInvitationResponse>> {
   try {
     core.debug('Inviting user');
+    core.debug(input.owner);
+    core.debug(input.role as string);
+    core.debug(input.email);
     return await github.orgs.createInvitation({
       org: input.owner,
       role: input.role,
@@ -18,7 +21,7 @@ async function createInvitation(
     });
   } catch (error) {
     core.debug(JSON.stringify(error));
-    if (error.errors.find((e: Error) => e.message === 'Over invitation rate limit')) {
+    if (error.errors && error.errors.find((e: Error) => e.message === 'Over invitation rate limit')) {
       const errorMessage = 'Over invitiation rate limit';
       await utils.writeIssueFeedback(github, {
         owner: input.owner,

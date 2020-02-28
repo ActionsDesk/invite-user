@@ -3488,6 +3488,9 @@ function createInvitation(github, input) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             core.debug('Inviting user');
+            core.debug(input.owner);
+            core.debug(input.role);
+            core.debug(input.email);
             return yield github.orgs.createInvitation({
                 org: input.owner,
                 role: input.role,
@@ -3496,7 +3499,7 @@ function createInvitation(github, input) {
         }
         catch (error) {
             core.debug(JSON.stringify(error));
-            if (error.errors.find((e) => e.message === 'Over invitation rate limit')) {
+            if (error.errors && error.errors.find((e) => e.message === 'Over invitation rate limit')) {
                 const errorMessage = 'Over invitiation rate limit';
                 yield utils.writeIssueFeedback(github, {
                     owner: input.owner,
