@@ -45,7 +45,7 @@ A JSON file with the rules you need to define to parse the GitHub Issue body and
 
 The action expects the use of regular expressions with named capture groups. There are two base named capture groups that the Action expects with one additional optional group:
 
-- **emailRule**
+- **emailDomainRule**
 - **trustedUserRule**
   - Optional, validation will be ignored if this is not included
 
@@ -137,7 +137,7 @@ This will workflow will create a new organization invitation for the user inform
 
 ```JSON
 {
-  "emailRule": {
+  "emailDomainRule": {
     "regex": ".*email@domain.com$"
   },
   "trustedUserRule": {
