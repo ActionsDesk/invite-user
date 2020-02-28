@@ -8454,9 +8454,10 @@ function handleError(error) {
 exports.handleError = handleError;
 function getInputs() {
     const email = core.getInput('EMAIL');
-    const role = core.getInput('USER_ROLE');
+    const role = (core.getInput('USER_ROLE') || "direct_member");
     const configPath = core.getInput('CONFIG_PATH');
     const owners = (core.getInput('OWNERS') || '').split(',').map(element => `@${element.trim()}`);
+    core.debug(role);
     return {
         email,
         role,
