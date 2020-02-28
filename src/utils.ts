@@ -46,6 +46,7 @@ export async function getConfig(github: GitHub, owner: string, repo: string, pat
   core.debug(JSON.stringify(decodedContent));
   const config: Config = JSON.parse(decodedContent);
 
+  core.debug(JSON.stringify(config));
   return config;
 }
 

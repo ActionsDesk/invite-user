@@ -3533,6 +3533,9 @@ function run() {
             const issue = utils.getIssueData(github_1.context.payload);
             const [owner, repo] = utils.getContextRepo();
             const { emailDomainRule, trustedUserRule } = yield utils.getConfig(github, owner, repo, actionInputs.configPath);
+            core.debug('after getConfig');
+            core.debug(JSON.stringify(emailDomainRule));
+            core.debug(JSON.stringify(trustedUserRule));
             if (!utils.validEmail(actionInputs.email, emailDomainRule.regex)) {
                 throw new Error(`Email ${actionInputs.email} not from a valid domain`);
             }
@@ -8424,6 +8427,7 @@ function getConfig(github, owner, repo, path) {
         const decodedContent = Buffer.from(content || '', 'base64').toString('ascii');
         core.debug(JSON.stringify(decodedContent));
         const config = JSON.parse(decodedContent);
+        core.debug(JSON.stringify(config));
         return config;
     });
 }
