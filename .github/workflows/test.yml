@@ -12,7 +12,8 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - run: |
-        echo "@chocrates:registry=https://npm.pkg.github.com/:_authToken=${{ secrets.OCTOMOCK_READ_PACKAGE }}" > ~/.npmrc
+        rm .npmrc
+        echo "//npm.pkg.github.com/:_authToken=${{ secrets.OCTOMOCK_READ_PACKAGE }}" > ~/.npmrc
         npm install
         npm run all
   test: # make sure the action works on a clean machine without building
