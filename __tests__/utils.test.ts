@@ -1,5 +1,4 @@
-jest.mock('@actions/core');
-
+/* global octomock */
 import {getClient, getContextRepo, getInputs, handleError, isTrustedUser, validEmail} from '../src/utils';
 import {GitHub} from '@actions/github';
 import {ActionInputs, Issue} from '../src/interfaces';
@@ -48,8 +47,7 @@ describe('Utils tests', () => {
     expect(getContextRepo).toThrowError();
   });
   test('getInputs should return ActionInputs', () => {
-    core.getInput = jest
-      .fn()
+    octomock.mockFunctions.core.getInput
       .mockReturnValueOnce('EMAIL')
       .mockReturnValueOnce('direct_member')
       .mockReturnValueOnce('CONFIG_PATH');
@@ -63,14 +61,10 @@ describe('Utils tests', () => {
     expect(inputs).toMatchObject<ActionInputs>(expected);
   });
   test('handleError', () => {
-    core.debug = jest.fn().mockReturnValue('debug');
-    core.setOutput = jest.fn().mockReturnValue('setOutput');
-    core.setFailed = jest.fn().mockReturnValue('setFailed');
-
     handleError(new Error('oh no!!!'));
 
-    expect(core.debug).toBeCalledTimes(2);
-    expect(core.setOutput).toBeCalledTimes(2);
-    expect(core.setFailed).toBeCalledTimes(1);
+    expect(octomock.mockFunctions.core.debug).toBeCalledTimes(2);
+    expect(octomock.mockFunctions.core.setOutput).toBeCalledTimes(2);
+    expect(octomock.mockFunctions.core.setFailed).toBeCalledTimes(1);
   });
 });
