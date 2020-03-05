@@ -68,7 +68,7 @@ export function handleError(error: Error): void {
 
 export function getInputs(): ActionInputs {
   const email = core.getInput('EMAIL');
-  const role: UserRole = core.getInput('USER_ROLE') as UserRole;
+  const role: UserRole = (core.getInput('USER_ROLE') || 'direct_member') as UserRole;
   const configPath = core.getInput('CONFIG_PATH');
   const owners = (core.getInput('OWNERS') || '').split(',').map(element => `@${element.trim()}`);
 

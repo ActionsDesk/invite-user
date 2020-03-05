@@ -16,7 +16,7 @@ async function createInvitation(
       email: input.email
     });
   } catch (error) {
-    if (error.errors.find((e: Error) => e.message === 'Over invitation rate limit')) {
+    if (error.errors && error.errors.find((e: Error) => e.message === 'Over invitation rate limit')) {
       const errorMessage = 'Over invitiation rate limit';
       await utils.writeIssueFeedback(github, {
         owner: input.owner,
