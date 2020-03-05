@@ -10,7 +10,8 @@
     "format-check": "prettier --check **/*.ts",
     "lint": "eslint src/**/*.ts",
     "pack": "ncc build",
-    "test": "jest",
+    "test": "jest --collect-coverage",
+    "test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand",
     "all": "npm run build && npm run format && npm run lint && npm run pack && npm test"
   },
   "repository": {
@@ -30,6 +31,7 @@
     "outdent": "^0.7.0"
   },
   "devDependencies": {
+    "@chocrates/octomock": "^1.0.5",
     "@types/jest": "^24.0.23",
     "@types/node": "^12.7.12",
     "@typescript-eslint/parser": "^2.8.0",

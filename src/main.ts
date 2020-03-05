@@ -52,7 +52,6 @@ async function run(): Promise<void> {
     const github: GitHub = utils.getClient();
 
     actionInputs = utils.getInputs();
-
     const issue: Issue = utils.getIssueData(context.payload);
 
     const [owner, repo] = utils.getContextRepo();
