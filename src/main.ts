@@ -58,6 +58,7 @@ async function run(): Promise<void> {
     const {emailDomainRule, trustedUserRule} = await utils.getConfig(github, owner, repo, actionInputs.configPath);
 
     core.debug(`Valid Email Domain ${emailDomainRule.regex}`);
+    core.debug(`Email ${actionInputs.email}`);
     if (!utils.validEmail(actionInputs.email, emailDomainRule.regex)) {
       throw new Error(`Email ${actionInputs.email} not from a valid domain`);
     }
